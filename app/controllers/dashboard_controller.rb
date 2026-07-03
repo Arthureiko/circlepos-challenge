@@ -1,5 +1,5 @@
 class DashboardController < ApplicationController
-  ALLOWED_MONTHS = [24, 36].freeze
+  ALLOWED_MONTHS = [ 24, 36 ].freeze
 
   def show
     @store_id = params[:store_id].presence
