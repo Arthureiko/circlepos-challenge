@@ -1,0 +1,54 @@
+<% content_for :title, "CirclePOS · Monthly Comparison" %>
+
+<div class="w-full max-w-6xl mx-auto flex flex-col gap-6 pb-16" data-controller="loading">
+  <header class="flex flex-col gap-1">
+    <h1 class="text-2xl font-semibold text-gray-900">Monthly Sales &amp; Gross Profit Comparison</h1>
+    <p class="text-sm text-gray-500">Year-over-year view for the selected store, values shown ex-tax.</p>
+  </header>
+
+  <%= form_with url: root_path, method: :get,
+        data: { turbo_frame: "dashboard_results" },
+        class: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 bg-white p-4 rounded-xl shadow-sm border border-gray-100" do |f| %>
+    <div class="flex flex-col gap-1">
+      <label class="text-xs font-medium text-gray-500" for="store_id">Store</label>
+      <%= f.select :store_id,
+            options_for_select(@stores.map { |s| [s["name"], s["id"]] }, @store_id),
+            {},
+            { id: "store_id", class: "rounded-md border-gray-300 text-sm", onchange: "this.form.requestSubmit()" } %>
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <label class="text-xs font-medium text-gray-500" for="months">Time range</label>
+      <%= f.select :months,
+            options_for_select([["Last 24 months", 24], ["Last 36 months", 36]], @months),
+            {},
+            { id: "months", class: "rounded-md border-gray-300 text-sm", onchange: "this.form.requestSubmit()" } %>
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <label class="text-xs font-medium text-gray-500" for="category_id">Category</label>
+      <%= f.select :category_id,
+            options_for_select(
+              [["All categories", ""]] + (@filter_options["categories"] || []).map { |c| [c["name"], c["id"]] },
+              @category_id
+            ),
+            {},
+            { id: "category_id", class: "rounded-md border-gray-300 text-sm", onchange: "this.form.requestSubmit()" } %>
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <label class="text-xs font-medium text-gray-500" for="channel">Channel</label>
+      <%= f.select :channel,
+            options_for_select(
+              [["All channels", ""]] + (@filter_options["channels"] || []).map { |c| [c["label"], c["id"]] },
+              @channel
+            ),
+            {},
+            { id: "channel", class: "rounded-md border-gray-300 text-sm", onchange: "this.form.requestSubmit()" } %>
+    </div>
+  <% end %>
+
+  <%= turbo_frame_tag "dashboard_results", class: "group relative block", data: { loading_target: "frame" } do %>
+    <%= render "results" %>
+  <% end %>
+</div>
